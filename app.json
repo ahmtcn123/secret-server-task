@@ -1,0 +1,9 @@
+{
+    "name": "Start on Heroku: Go",
+    "description": "Secret Server",
+    "keywords": [
+        "go"
+    ],
+    "website": "https://github.com/ahmtcn123/secret-server-task",
+    "repository": "https://github.com/ahmtcn123/secret-server-task"
+}
