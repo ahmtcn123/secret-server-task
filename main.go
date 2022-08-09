@@ -47,7 +47,7 @@ func main() {
 						"message": "Not found (No remaining views)",
 					})
 					return
-				} else if time.Now().After(secret["createdAt"].(time.Time).Add(time.Duration(secret["expiresAfter"].(int)) * time.Minute)) {
+				} else if secret["expiresAfter"] != 0 && time.Now().After(secret["createdAt"].(time.Time).Add(time.Duration(secret["expiresAfter"].(int)) * time.Minute)) {
 					c.JSON(404, gin.H{
 						"message": "Not found (Expired)",
 					})
