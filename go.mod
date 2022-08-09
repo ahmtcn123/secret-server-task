@@ -1,4 +1,6 @@
-module example.com/m/v2
+// +heroku goVersion go1.19
+
+module secret-server-task
 
 go 1.19
 
