@@ -1,8 +1,8 @@
-// +heroku goVersion go1.15
+// +heroku goVersion go1.17
 
 module secret-server-task
 
-go 1.15
+go 1.17
 
 require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
