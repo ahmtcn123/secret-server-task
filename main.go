@@ -1,12 +1,12 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	"hash/fnv"
 	"os"
 	"strconv"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 type SecretResponse struct {
@@ -30,6 +30,18 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*",
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "https://github.com"
+		},
+		MaxAge: 12 * time.Hour,
+	}))
+
 	v1 := router.Group("/v1")
 	{
 		v1.GET("/secret/:hash", func(c *gin.Context) {
@@ -47,7 +59,7 @@ func main() {
 						"message": "Not found (No remaining views)",
 					})
 					return
-				} else if secret["expiresAfter"] != 0 && time.Now().After(secret["createdAt"].(time.Time).Add(time.Duration(secret["expiresAfter"].(int)) * time.Minute)) {
+				} else if secret["expiresAfter"] != 0 && time.Now().After(secret["createdAt"].(time.Time).Add(time.Duration(secret["expiresAfter"].(int))*time.Minute)) {
 					c.JSON(404, gin.H{
 						"message": "Not found (Expired)",
 					})
