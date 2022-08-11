@@ -55,14 +55,35 @@ func main() {
 				secret := secretLocal[hash]
 
 				if secret["remainingViews"] == 0 {
-					c.JSON(404, gin.H{
-						"message": "Not found (No remaining views)",
-					})
+					if c.Request.Header.Get("Content-Type") == "application/json" {
+						c.JSON(404, gin.H{
+							"message": "Not found (No remaining views)",
+						})
+					} else if c.Request.Header.Get("Content-Type") == "application/xml" {
+						c.XML(404, gin.H{
+							"message": "Not found (No remaining views)",
+						})
+					} else {
+						c.JSON(404, gin.H{
+							"message": "Not found (No remaining views)",
+						})
+					}
+
 					return
 				} else if secret["expiresAfter"] != 0 && time.Now().After(secret["createdAt"].(time.Time).Add(time.Duration(secret["expiresAfter"].(int))*time.Minute)) {
-					c.JSON(404, gin.H{
-						"message": "Not found (Expired)",
-					})
+					if c.Request.Header.Get("Content-Type") == "application/json" {
+						c.JSON(404, gin.H{
+							"message": "Not found (Expired)",
+						})
+					} else if c.Request.Header.Get("Content-Type") == "application/xml" {
+						c.XML(404, gin.H{
+							"message": "Not found (Expired)",
+						})
+					} else {
+						c.JSON(404, gin.H{
+							"message": "Not found (Expired)",
+						})
+					}
 					return
 				} else {
 					secret["remainingViews"] = secret["remainingViews"].(int) - 1
@@ -112,7 +133,18 @@ func main() {
 				} else if c.Request.Header.Get("Content-Type") == "application/xml" {
 					c.XML(405, gin.H{"error": "expireAfterViews must be greater than 0"})
 				} else {
-					c.String(405, "expireAfterViews must be greater than "+string(expireAfter)+" "+string(expireAfterViews)+" "+string(secret))
+					c.JSON(405, gin.H{"error": "expireAfterViews must be greater than 0"})
+				}
+				return
+			}
+
+			if expireAfter < 0 {
+				if c.Request.Header.Get("Content-Type") == "application/json" {
+					c.JSON(405, gin.H{"error": "expireAfter must be greater than or equal to 0"})
+				} else if c.Request.Header.Get("Content-Type") == "application/xml" {
+					c.XML(405, gin.H{"error": "expireAfter must be greater than or equal to 0"})
+				} else {
+					c.JSON(405, gin.H{"error": "expireAfterViews must be greater than or equal to 0"})
 				}
 				return
 			}
